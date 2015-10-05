@@ -40,6 +40,7 @@ auto detectEye(cv::Mat& im, cv::Mat& tpl, cv::Rect& rect)
     }
     return eyes.size();
 }
+
 /**
 * Perform template matching to search the user's eye in the given image.
 *
@@ -85,15 +86,14 @@ int main(int argc, char** argv)
         return 1;
     }
     // Set video to 320x240
-    cap.set(CV_CAP_PROP_FRAME_WIDTH, 320);
-    cap.set(CV_CAP_PROP_FRAME_HEIGHT, 240);
+    cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
+    cap.set(CV_CAP_PROP_FRAME_HEIGHT, 4800);
     cv::Mat frame, eye_tpl;
     cv::Rect eye_bb;
     while (cv::waitKey(15) != 'q')
     {
         cap >> frame;
-        if (frame.empty())
-            break;
+        if (frame.empty()) break;
         // Flip the frame horizontally, Windows users might need this
         cv::flip(frame, frame, 1);
         // Convert to greyscale and
@@ -113,6 +113,21 @@ int main(int argc, char** argv)
             // Draw bounding rectangle for the eye
             cv::rectangle(frame, eye_bb, CV_RGB(0,255,0));
         }
+
+        {
+            struct Line { cv::Point from, to; };
+            using Lines = std::vector<Line>;
+            Lines lines{
+                    { { 213, 0 }, { 213, 480 } },
+                    { { 427, 0 }, { 427, 480 } },
+                    { { 0, 160 }, { 640, 160 } },
+                    { { 0, 320 }, { 640, 320 } }
+            };
+
+            for (auto const& l : lines)
+                cv::line(frame,l.from, l.to, cv::Scalar( 0, 250, 0 ), 1, 1);
+        }
+
         // Display video
         cv::imshow("video", frame);
     }
