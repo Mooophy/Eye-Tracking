@@ -87,7 +87,7 @@ int main(int argc, char** argv)
     }
     // Set video to 320x240
     cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
-    cap.set(CV_CAP_PROP_FRAME_HEIGHT, 4800);
+    cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
     cv::Mat frame, eye_tpl;
     cv::Rect eye_bb;
     while (cv::waitKey(15) != 'q')
