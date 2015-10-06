@@ -114,7 +114,8 @@ int main(int argc, char** argv)
             cv::rectangle(frame, eye_bb, CV_RGB(0,255,0));
         }
 
-        {
+        {//drawing grids
+
             struct Line { cv::Point from, to; };
             using Lines = std::vector<Line>;
             Lines lines{
@@ -125,7 +126,12 @@ int main(int argc, char** argv)
             };
 
             for (auto const& l : lines)
-                cv::line(frame,l.from, l.to, cv::Scalar( 0, 250, 0 ), 1, 1);
+                cv::line(frame,l.from, l.to, CV_RGB(0,255,0), 1, 1);
+        }
+
+        {//drawing letters
+            std::string direction = "L";
+            cv::putText(frame, direction, cv::Point{ 290, 435 }, cv::FONT_HERSHEY_DUPLEX, 4, CV_RGB(0,255,0), 4 );
         }
 
         // Display video
