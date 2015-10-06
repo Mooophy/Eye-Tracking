@@ -15,7 +15,8 @@
 
 cv::CascadeClassifier face_cascade;
 cv::CascadeClassifier eye_cascade;
-
+const int WIDTH = 640, HEIGHT = 480;
+//const cv::Rect run{};
 /**
 * Function to detect human face and the eyes from an image.
 *
@@ -67,6 +68,11 @@ auto trackEye(cv::Mat& im, cv::Mat& tpl, cv::Rect& rect)
         rect.x = rect.y = rect.width = rect.height = 0;
 }
 
+auto center_of_rect(cv::Rect const& rect)
+{
+    return cv::Point{ rect.x + rect.width / 2, rect.y + rect.height / 2 };
+}
+
 int main(int argc, char** argv)
 {
     // Load the cascade classifiers
@@ -85,12 +91,12 @@ int main(int argc, char** argv)
         std::cout << "bad\n";
         return 1;
     }
-    // Set video to 320x240
-    cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
-    cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
+
+    cap.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
+    cap.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
     cv::Mat frame, eye_tpl;
     cv::Rect eye_bb;
-    while (cv::waitKey(15) != 'q')
+    while (cv::waitKey(15) != 'q' && cv::waitKey(15) != 'Q')
     {
         cap >> frame;
         if (frame.empty()) break;
@@ -129,12 +135,15 @@ int main(int argc, char** argv)
                 cv::line(frame,l.from, l.to, CV_RGB(0,255,0), 1, 1);
         }
 
-        {//drawing letters
-            std::string direction = "L";
-            cv::putText(frame, direction, cv::Point{ 290, 435 }, cv::FONT_HERSHEY_DUPLEX, 4, CV_RGB(0,255,0), 4 );
-        }
+        auto draw_direction = [&](std::string const& direction) {
+            cv::putText(frame, direction, cv::Point{ 280, 435 }, cv::FONT_HERSHEY_DUPLEX, 3, CV_RGB(70,  130,   180), 5 );
+            cv::putText(frame, direction, cv::Point{ 280, 435 }, cv::FONT_HERSHEY_DUPLEX, 3, CV_RGB(102, 105,   170), 4 );
+        };
 
-        // Display video
+        auto direction = center_of_rect(eye_bb).x < 300 ? "L" : "R";
+        draw_direction(direction);
+        std::cout << center_of_rect(eye_bb).x << std::endl;
+
         cv::imshow("video", frame);
     }
     return 0;
