@@ -12,6 +12,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
 #include <iostream>
+#include <vector>
 
 cv::CascadeClassifier face_cascade;
 cv::CascadeClassifier eye_cascade;
@@ -135,14 +136,41 @@ int main(int argc, char** argv)
                 cv::line(frame,l.from, l.to, CV_RGB(0,255,0), 1, 1);
         }
 
-        auto draw_direction = [&](std::string const& direction) {
-            cv::putText(frame, direction, cv::Point{ 280, 435 }, cv::FONT_HERSHEY_DUPLEX, 3, CV_RGB(70,  130,   180), 5 );
-            cv::putText(frame, direction, cv::Point{ 280, 435 }, cv::FONT_HERSHEY_DUPLEX, 3, CV_RGB(102, 105,   170), 4 );
-        };
+        {
+            std::vector<cv::Rect> direction_boxes{
+                    cv::Rect{cv::Point{213,   0}, cv::Point{427, 160}}, //F
+                    cv::Rect{cv::Point{  0, 160}, cv::Point{213, 320}}, //L
+                    cv::Rect{cv::Point{427, 160}, cv::Point{640, 320}}  //R
+            };
 
-        auto direction = center_of_rect(eye_bb).x < 300 ? "L" : "R";
-        draw_direction(direction);
-        std::cout << center_of_rect(eye_bb).x << std::endl;
+            auto draw_direction = [&](std::string const &direction) {
+                cv::putText(frame, direction, cv::Point{280, 435}, cv::FONT_HERSHEY_DUPLEX, 3, CV_RGB(70, 130, 180),  5);
+                cv::putText(frame, direction, cv::Point{280, 435}, cv::FONT_HERSHEY_DUPLEX, 3, CV_RGB(102, 105, 170), 4);
+            };
+
+            for(int box = 0; box != 3; ++box)
+            {
+                if (box == 0)
+                    if (direction_boxes[0].contains(center_of_rect(eye_bb)))
+                    {
+                        draw_direction("F");
+                        break;
+                    }
+                if (box == 1)
+                    if (direction_boxes[1].contains(center_of_rect(eye_bb)))
+                    {
+                        draw_direction("L");
+                        break;
+                    }
+                if (box == 2)
+                    if (direction_boxes[2].contains(center_of_rect(eye_bb)))
+                    {
+                        draw_direction("R");
+                        break;
+                    }
+            }
+            std::cout << center_of_rect(eye_bb).x << std::endl;
+        }
 
         cv::imshow("video", frame);
     }
