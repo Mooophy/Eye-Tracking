@@ -12,5 +12,5 @@
 12  draw grid
 13  draw rectangle for enclosing eye
 14  generate direction command using eye position
-15  send command to Eye bedded system
+15  send command to embedded system
 ```
