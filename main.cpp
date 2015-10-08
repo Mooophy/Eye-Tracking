@@ -131,12 +131,11 @@ int main(int argc, char** argv)
                     { { 0, 160 }, { 640, 160 } },
                     { { 0, 320 }, { 640, 320 } }
             };
-
             for (auto const& l : lines)
                 cv::line(frame,l.from, l.to, CV_RGB(0,255,0), 1, 1);
         }
 
-        {
+        {//generate direction command
             std::vector<cv::Rect> direction_boxes{
                     cv::Rect{cv::Point{213,   0}, cv::Point{427, 160}}, //F
                     cv::Rect{cv::Point{  0, 160}, cv::Point{213, 320}}, //L
