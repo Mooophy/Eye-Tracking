@@ -26,7 +26,7 @@ const int WIDTH = 640, HEIGHT = 480;
 * @param rect Will be filled with the bounding box of the eye
 * @return zero=failed, nonzero=success
 */
-auto detectEye(cv::Mat& im, cv::Mat& tpl, cv::Rect& rect)
+auto detectEye(cv::Mat const& im, cv::Mat & tpl, cv::Rect & rect)
 {
     std::vector<cv::Rect> faces, eyes;
     face_cascade.detectMultiScale(im, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, cv::Size(30,30));
@@ -50,7 +50,7 @@ auto detectEye(cv::Mat& im, cv::Mat& tpl, cv::Rect& rect)
 * @param tpl The eye template
 * @param rect The eye bounding box, will be updated with the new location of the eye
 */
-auto trackEye(cv::Mat& im, cv::Mat& tpl, cv::Rect& rect)
+auto trackEye(cv::Mat const& im, cv::Mat& tpl, cv::Rect& rect)
 {
     cv::Size size(rect.width * 2, rect.height * 2);
     cv::Rect window(rect + size - cv::Point(size.width/2, size.height/2));
