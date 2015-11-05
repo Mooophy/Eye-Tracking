@@ -292,3 +292,70 @@ function release_classifier_cascade( _cascade )
         release_classifier_cascade( cascade->hid_cascade )
         free( _cascade )
 ```
+```python
+function read_classifier( fs, node )
+    stages_fn = file_stream( fs, node)
+    n = stages_fn.data.seq.total
+    cascade = create_classifier_cascade(n)
+    seq_fn = file_stream( fs, node)
+    fn = getSeqElem( seq_fn.data.seq, 0 )
+    cascade.orig_window_size.width = fn.data.i
+    fn = getSeqElem( seq_fn->data.seq, 1 )
+    cascade.orig_window_size.height = fn->data.i
+    startReadSeq( stages_fn->data.seq, &stages_reader )
+    for i = 0 to n - 1
+        trees_fn = getFileNodeByName( fs, stage_fn)
+        cascade.stage_classifier[i].classifier =
+            allocate( trees_fn->data.seq->total * sizeof( cascade->stage_classifier[i].classifier[0] ) )
+        cascade.stage_classifier[i].count = trees_fn.data.seq.total
+        startReadSeq( trees_fn.data.seq, trees_reader )
+        for j = 0 to trees_fn.data.seq.total - 1
+            classifier = cascade.stage_classifier[i].classifier[j]
+            tree_fn = trees_reader.ptr
+            classifier.count = tree_fn.data.seq.total
+            classifier.haar_feature = allocate(
+                classifier.count * ( sizeof( classifier->haar_feature ) +
+                                      sizeof( classifier->threshold ) +
+                                      sizeof( classifier->left ) +
+                                      sizeof( classifier->right ) ) +
+                (classifier->count + 1) * sizeof( classifier->alpha ) )
+            classifier.threshold = classifier.haar_feature+classifier.count
+            classifier.left = classifier.threshold + classifier.count
+            classifier.right = classifier.left + classifier.count
+            classifier.alpha = classifier.right + classifier.count
+            startReadSeq( tree_fn->data.seq, &tree_reader )
+            for( k = 0, last_idx = 0; k < tree_fn->data.seq->total; ++k )
+            for k = 0 to tree_fn.data.seq.total - 1
+                node_fn = tree_reader.ptr
+                feature_fn = getFileNodeByName( fs, node_fn )
+                rects_fn = getFileNodeByName( fs, feature_fn )
+                startReadSeq( rects_fn.data.seq, rects_reader )
+                for l = 0 to rects_fn.data.seq.total - 1
+                    rect_fn = rects_reader.ptr
+                    r.x = fn.data.i;
+                    r.y = fn.data.i;
+                    r.width = fn.data.i;
+                    r.height = fn.data.i;
+                    classifier.haar_feature[k].rect[l].weight = fn.data.f
+                    classifier.haar_feature[k].rect[l].r = r
+                for l = rects_fn.data.seq.total to max - 1
+                    classifier->haar_feature[k].rect[l].weight = 0;
+                    classifier->haar_feature[k].rect[l].r = rect( 0, 0, 0, 0 )
+                fn = getFileNodeByName( fs, feature_fn);
+                classifier.haar_feature[k].tilted = ( fn->data.i != 0 )
+                fn = getFileNodeByName( fs, node_fn)
+                classifier.threshold[k] = fn.data.f
+                fn = getFileNodeByName( fs, node_fn)
+        fn = getFileNodeByName( fs, stage_fn )
+        cascade.stage_classifier[i].threshold = fn.data.f
+        parent = i - 1
+        next = -1
+        fn = getFileNodeByName( fs, stage_fn)
+        parent = fn->data.i
+        fn = getFileNodeByName( fs, stage_fn )
+        next = fn->data.i
+        cascade.stage_classifier[i].parent = parent
+        cascade.stage_classifier[i].next = next
+        cascade.stage_classifier[i].child = -1
+    return cascade
+```
