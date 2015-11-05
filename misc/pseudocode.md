@@ -481,3 +481,29 @@ function group_rectangles(rectList, groupThreshold, eps, weights, levelWeights)
             if( levelWeights )
                 levelWeights->push_back(w1);
 ```
+```python
+function compute_channels(scaleIdx, img)
+    s = scaleData.at(scaleIdx)
+    sqofs = has_tilted_features() ? sbufSize.area() * 2 : sbufSize.area()
+    if (img)
+        sx = s.layer_ofs % sbufSize.width
+        sy = s.layer_ofs / sbufSize.width
+        sqy = sy + (sqofs / sbufSize.width)
+        sum(usbuf, rect(sx, sy, s.szi.width, s.szi.height))
+        sqsum(usbuf, Rect(sx, sqy, s.szi.width, s.szi.height))
+        if (has_tilted_features())
+            sty = sy + (tofs / sbufSize.width)
+            tilted(usbuf, rect(sx, sty, s.szi.width, s.szi.height))
+            integral(img, sum, sqsum, tilted)
+        else
+            u = sqsum.u
+            integral(img, sum, sqsum, noArray())
+    else
+        sum(s.szi, sbuf.pt() + s.layer_ofs, sbuf.step)
+        sqsum(s.szi, CV_32S, sum.ptr() + sqofs, sbuf.step)
+        if (has_tilted_features())
+            tilted(s.szi, sum.ptr() + tofs, sbuf.step)
+            integral(img, sum, sqsum, tilted)
+        else
+            integral(img, sum, sqsum, noArray())
+```
