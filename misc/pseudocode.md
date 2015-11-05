@@ -507,3 +507,19 @@ function compute_channels(scaleIdx, img)
         else
             integral(img, sum, sqsum, noArray())
 ```
+
+```python
+function computeOptFeatures()
+    if (hasTiltedFeatures)
+        tofs = sbufSize.area()
+    sstep = sbufSize.width
+    nfeatures = features.size()
+    optfeatures.resize(nfeatures)
+    optfeaturesPtr = optfeatures[0]
+    for fi = 0 to nfeatures - 1
+        optfeaturesPtr[fi].setOffsets( ff[fi], sstep, tofs )
+    optfeatures_lbuf.resize(nfeatures)
+    for fi = 0 to nfeatures - 1
+        optfeatures_lbuf.at(fi).setOffsets(ff[fi], lbufSize.width > 0 ? lbufSize.width : sstep, tofs)
+    copyVectorToUMat(optfeatures_lbuf, ufbuf)
+```
