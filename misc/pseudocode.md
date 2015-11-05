@@ -359,3 +359,19 @@ function read_classifier( fs, node )
         cascade.stage_classifier[i].child = -1
     return cascade
 ```
+```python
+function write_classifier( fs, name, struct_ptr, attributes )
+    cascade = struct_ptr;
+    for( i = 0; i < cascade->count; ++i )
+        startWriteStruct( fs )
+        write_comment( fs, buf, 1 )
+        for j = 0 to cascade->stage_classifier[i].count - 1
+            tree = cascade->stage_classifier[i].classifier[j]
+            for k = 0 to tree.count - 1
+                feature = tree.haar_feature[k]
+        end( fs )
+        write_real( fs, cascade->stage_classifier[i].threshold)
+        write_int( fs,  cascade->stage_classifier[i].parent )
+        write_int( fs, cascade->stage_classifier[i].next )
+        end( fs )
+```
