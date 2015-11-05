@@ -523,3 +523,23 @@ function computeOptFeatures()
         optfeatures_lbuf.at(fi).setOffsets(ff[fi], lbufSize.width > 0 ? lbufSize.width : sstep, tofs)
     copyVectorToUMat(optfeatures_lbuf, ufbuf)
 ```
+
+```python
+function setWindow( pt, scaleIdx )
+    s = getScaleData(scaleIdx);
+    if( pt.x < 0 or pt.y < 0 or
+        pt.x + origWinSize.width >= s.szi.width or
+        pt.y + origWinSize.height >= s.szi.height )
+        return false;
+    pwin = sbuf.at(pt) + s.layer_ofs
+    pq = pwin + sqofs
+    area = normrect.area()
+    nf = area * valsqsum - valsum * valsum;
+    if( nf > 0. )
+        nf = sqrt(nf)
+        varianceNormFactor = 1/nf
+        return area*varianceNormFactor < 1e-1
+    else
+        varianceNormFactor = 1.f;
+        return false;
+```
