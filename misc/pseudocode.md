@@ -375,3 +375,44 @@ function write_classifier( fs, name, struct_ptr, attributes )
         write_int( fs, cascade->stage_classifier[i].next )
         end( fs )
 ```
+---
+```python
+function clone_classifier( struct_ptr )
+    cascade = null
+    cascade_src = struct_ptr;
+    n = cascade_src.count;
+    cascade = create_classifier_cascade(n)
+    cascade = orig_window_size = cascade_src.orig_window_size
+    for i = 0 to n - 1
+        cascade.stage_classifier[i].parent = cascade_src.stage_classifier[i].parent
+        cascade.stage_classifier[i].next = cascade_src.stage_classifier[i].next
+        cascade.stage_classifier[i].child = cascade_src.stage_classifier[i].child
+        cascade.stage_classifier[i].threshold = cascade_src.stage_classifier[i].threshold
+        cascade.stage_classifier[i].count = 0
+        cascade.stage_classifier[i].classifier = allocate( cascade_src.stage_classifier[i].count * sizeof( cascade->stage_classifier[i].classifier[0] ) )
+        cascade.stage_classifier[i].count = cascade_src.stage_classifier[i].count
+        for j = 0 to cascade->stage_classifier[i].count - 1
+            cascade.stage_classifier[i].classifier[j].haar_feature = null
+        for j = 0 to cascade.stage_classifier[i].count
+            classifier_src = cascade_src.stage_classifier[i].classifier[j]
+            classifier = cascade.stage_classifier[i].classifier[j]
+            classifier.count = classifier_src.count
+            classifier.feature = allocate(
+                classifier->count * ( sizeof( classifier->haar_feature ) +
+                                      sizeof( classifier->threshold ) +
+                                      sizeof( classifier->left ) +
+                                      sizeof( classifier->right ) ) +
+                (classifier.count + 1) * sizeof( classifier->alpha ) )
+            classifier.threshold = classifier.feature+classifier.count
+            classifier.left = classifier.threshold + classifier.count
+            classifier.right = classifier.left + classifier.count
+            classifier.alpha = classifier.right + classifier.count
+            for k = 0 to classifier.count - 1
+                classifier.haar_feature[k] = classifier_src.haar_feature[k]
+                classifier.threshold[k] = classifier_src.threshold[k]
+                classifier.left[k] = classifier_src->left[k]
+                classifier.right[k] = classifier_src->right[k]
+                classifier.alpha[k] = classifier_src->alpha[k]
+            classifier.alpha[classifier.count] = classifier_src.alpha[classifier.count]
+    return cascade
+```
