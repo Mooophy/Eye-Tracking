@@ -233,3 +233,51 @@ function set_images_for_classifier_cascade( _cascade, _sum, _sqsum, _tilted_sum,
                 hidfeature.rect[0].weight = -sum0/area0
 
 ```
+---
+```python
+function load_cascade_cart( input_cascade, n, orig_window_size )
+    cascade = create_classifier_cascade(n)
+    cascade.orig_window_size = orig_window_size
+    for i = 0 to n - 1
+        threshold = 0;
+        stage = input_cascade[i];
+        dl = 0;
+        parent = -1;
+        next = -1;
+        cascade.stage_classifier[i].count = count;
+        cascade.stage_classifier[i].classifier = allocate( count * sizeof(cascade.stage_classifier[i].classifier[0]))
+        for j = 0 to count - 1
+            classifier = cascade.stage_classifier[i].classifier + j
+            k, rects = 0
+            stage += dl
+            classifier.haar_feature = allocate( classifier.count * ( sizeof( classifier->haar_feature ) +
+                                      sizeof( classifier->threshold ) +
+                                      sizeof( classifier->left ) +
+                                      sizeof( classifier->right ) ) +
+                (classifier.count + 1) * sizeof( classifier.alpha ) )
+            classifier.threshold = classifier.haar_feature + classifier.count
+            classifier.left = classifier.threshold + classifier.count
+            classifier.right = classifier.left + classifier.count
+            classifier.alpha = classifier.right + classifier.count
+            for l = 0 to classifier.count - 1
+                stage += dl
+                for k = 0 to rects - 1
+                    band = 0
+                    stage += dl
+                    classifier.haar_feature[l].rect[k].r = r
+                stage += dl
+                classifier.haar_feature[l].tilted = strncmp( str, "tilted", 6 ) == 0
+                for k = 0 to rects - 1
+                    clear( classifier->haar_feature[l].rect + k, 0, sizeof(classifier->haar_feature[l].rect[k]))
+                stage += dl
+            for l = 0 to classifier.count - 1
+                stage += dl
+        stage += dl
+        cascade.stage_classifier[i].threshold = threshold
+        cascade.stage_classifier[i].parent = parent
+        cascade.stage_classifier[i].next = next
+        cascade.stage_classifier[i].child = -1
+        if( parent != -1 && cascade->stage_classifier[parent].child == -1 )
+            cascade.stage_classifier[parent].child = i
+    return cascade
+```
