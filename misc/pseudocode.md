@@ -281,3 +281,14 @@ function load_cascade_cart( input_cascade, n, orig_window_size )
             cascade.stage_classifier[parent].child = i
     return cascade
 ```
+---
+```python
+function release_classifier_cascade( _cascade )
+    if( _cascade )
+        for i = 0 to cascade.count - 1
+            for j = 0 to cascade->stage_classifier[i].count - 1
+                free( cascade.stage_classifier[i].classifier[j].haar_feature );
+            free( cascade.stage_classifier[i].classifier )
+        release_classifier_cascade( cascade->hid_cascade )
+        free( _cascade )
+```
